@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using PurrNet;
+using TMPro;
 
 public class TestNetwork : NetworkIdentity
 {
@@ -11,6 +12,14 @@ public class TestNetwork : NetworkIdentity
     // Setting the color of the cube
     [SerializeField] private Color _color;
     [SerializeField] private Renderer _renderer;
+
+    //Synchronization
+    [SerializeField] private SyncVar<int> _health = new(initialValue: 100);
+
+    // Seeing how the above works
+    [SerializeField] private int _localHealth = 100;
+
+    [SerializeField] private TMP_Text _healthText;
 
     // Start of Color
     private void Update()
@@ -30,6 +39,16 @@ public class TestNetwork : NetworkIdentity
                 intValue = 10
             };
             SetColor(myStruct);
+        }
+
+        if (Input.GetKeyDown(KeyCode.S))
+        {
+            TakeDamage(10);
+        }
+
+        if (Input.GetKeyDown(KeyCode.D))
+        {
+            SetHealth(_localHealth - 10);
         }
     }
 
@@ -61,12 +80,28 @@ public class TestNetwork : NetworkIdentity
 
     //End of Color
 
-    // Start of Spawn
+    // Start of Spawn and Synchronization OnDestory
     private void Awake()
     {
         //This givce false and shows that the server only spawns objects once initial setup is done
         Debug.Log($"IsSpawned: {isSpawned}");
+
+        //Callbacks in SyncVar
+        _health.onChanged += OnChanged;
     }
+
+    protected override void OnDestroy()
+    {
+        base.OnDestroy();
+        _health.onChanged -= OnChanged;
+    }
+
+    private void OnChanged(int newValue)
+    {
+        Debug.Log($"[{(isServer ? "SERVER" : "CLIENT")}] Health Changed: {newValue}");
+        _healthText.text = newValue.ToString();
+    }
+
 
     protected override void OnSpawned()
     {
@@ -82,4 +117,25 @@ public class TestNetwork : NetworkIdentity
     }
 
     // End of Spawn
+
+    // Start of synchronization 
+
+    [ServerRpc] //since the health is server owned, all clients can tell the server to remove 10 from health
+    private void TakeDamage(int damage)
+    {
+        _health.value -= damage;
+
+        if (_health.value <= 0)
+        {
+            _healthText.text = "Dead";
+        }
+    }
+
+    // Same as how above works internally but is worse becuase it wont know if the takeDamage happens at the same time so above preffered
+    [ObserversRpc(bufferLast: true)]
+    private void SetHealth(int health)
+    {
+        _localHealth = health;
+    }
+
 }
