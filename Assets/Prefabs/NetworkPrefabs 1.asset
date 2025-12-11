@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 66869b09091574e4c972f42f5ae2268e, type: 3}
+  m_Name: NetworkPrefabs 1
+  m_EditorClassIdentifier: 
+  autoGenerate: 1
+  networkOnly: 1
+  poolByDefault: 0
+  folder: {fileID: 102900000, guid: 6473b7f4017a24d1d9b5741bf192c3de, type: 3}
+  linkedNetworkPrefabs: []
+  prefabs:
+  - guid: 526cc129817724bfd9bf02361ab64b8a
+    prefab: {fileID: 477011824764886703, guid: 526cc129817724bfd9bf02361ab64b8a, type: 3}
+    pooled: 0
+    warmupCount: 5
+  - guid: c5b32bff7ab3141b1ab77b98e48ccead
+    prefab: {fileID: 5014306491808820904, guid: c5b32bff7ab3141b1ab77b98e48ccead, type: 3}
+    pooled: 0
+    warmupCount: 5
